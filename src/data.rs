@@ -1,5 +1,6 @@
 // Loading and saving game data.
-use crate::board::Board;
+use std::fs;
+use crate::board::{Board, Cell, SIZE, new_board};
 
 pub const MIN_SHIP: usize = 2;
 pub const MAX_SHIP: usize = 5;
@@ -61,8 +62,30 @@ pub fn sort_scores_desc(records: &mut Vec<ScoreRecord>) {
 // Return None unless the line has exactly one comma, a non-empty trimmed name,
 // and a length that parses as a number from MIN_SHIP to MAX_SHIP.
 // Model it on parse_score above.
-pub fn parse_ship_line(_line: &str) -> Option<ShipSpec> {
-    todo!("Task 1: parse_ship_line")
+pub fn parse_ship_line(line: &str) -> Option<ShipSpec> {
+    let parts: Vec<&str> = line.split(',').collect();
+    if parts.len() != 2 {
+        return None;
+    }
+
+    let name = parts[0].trim();
+    if name.is_empty() {
+        return None;
+    }
+
+    let length: usize = match parts[1].trim().parse() {
+        Ok(n) => n,
+        Err(_) => return None,
+    };
+
+    if length < MIN_SHIP || length > MAX_SHIP {
+        return None;
+    }
+
+    Some(ShipSpec {
+        name: name.to_string(),
+        length,
+    })
 }
 
 // Task 2.
