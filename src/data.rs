@@ -1,4 +1,6 @@
 // Loading and saving game data.
+use std::fs::OpenOptions;
+use std::io::Write;
 use std::fs;
 use crate::board::{Board, Cell, SIZE, new_board};
 
@@ -192,8 +194,24 @@ pub fn load_board(path: &str) -> Option<Board> {
 // Replace commas in the name with spaces so the line stays parseable.
 // Return true if the write succeeded; on failure print the error to stderr
 // and return false.
-pub fn append_score(_path: &str, _record: &ScoreRecord) -> bool {
-    todo!("Task 6: append_score")
+pub fn append_score(path: &str, record: &ScoreRecord) -> bool {
+    let mut file = match OpenOptions::new().create(true).append(true).open(path) {
+        Ok(f) => f,
+        Err(e) => {
+            eprintln!("Could not open {}: {}", path, e);
+            return false;
+        }
+    };
+
+    let name = record.name.replace(',', " ");
+
+    match writeln!(file, "{},{}", name, record.score) {
+        Ok(_) => true,
+        Err(e) => {
+            eprintln!("Could not write to {}: {}", path, e);
+            false
+        }
+    }
 }
 
 // Task 7.
