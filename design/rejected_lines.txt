@@ -1,0 +1,6 @@
+Rejected lines from data/fleet.txt
+
+Tugboat,1  - length 1 is too short (minimum is 2)
+Dinghy,x   - length is not a number
+Flagship   - no comma, so the line does not have two parts
+EOF
