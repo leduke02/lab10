@@ -1,5 +1,5 @@
 use battleship::board::{Cell, SIZE};
-use battleship::data::{ScoreRecord, ShipSpec, parse_board, parse_score, parse_ship_line};
+use battleship::data::{ScoreRecord, ShipSpec,load_scores, parse_board, parse_score, parse_ship_line};
 
 // A valid board as text. Row 0 starts with two ship cells; row 1 has one at column 2.
 const GOOD_BOARD: &str = "SS........\n\
@@ -73,3 +73,20 @@ fn parse_score_valid() {
 // 2. parse_ship_line returns None when the length is not a number ("Dinghy,x").
 // 3. parse_board returns None when there are only nine rows. Write the nine
 //    rows as a string literal like GOOD_BOARD, with one row removed.
+#[test]
+fn my_ship_line_trims_spaces() {
+    let ship = parse_ship_line("  Cruiser , 3 ").unwrap();
+    assert_eq!(ship.name, "Cruiser");
+    assert_eq!(ship.length, 3);
+}
+
+#[test]
+fn my_board_rejects_short_row() {
+    let text = ".........\n".repeat(10);
+    assert!(parse_board(&text).is_none());
+}
+
+#[test]
+fn my_scores_missing_file_is_empty() {
+    assert!(load_scores("data/does_not_exist.txt").is_empty());
+}
