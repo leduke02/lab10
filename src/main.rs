@@ -9,6 +9,7 @@ const FLEET_PATH: &str = "data/fleet.txt";
 // TODO (Task 8): add PRACTICE_PATH ("data/boards/practice.txt").
 const PRACTICE_PATH: &str = "data/boards/practice.txt";
 const TOP_N: usize = 5;
+const SCORES_PATH: &str = "data/scores.txt";
 
 fn main() {
     // TODO (Task 5): replace default_fleet() with data::load_fleet(FLEET_PATH),
@@ -40,13 +41,24 @@ fn main() {
 
 // Print the best scores, highest first, or a message if there are none.
 fn show_top_scores(n: usize) {
+    let mut records = data::load_scores(SCORES_PATH);
+
+    println!("TOP {}", n);
+    if records.is_empty() {
+        println!("  no scores yet");
+        return;
+    }
+
+    data::sort_scores_desc(&mut records);
+
+    for (i, rec) in records.iter().take(n).enumerate() {
+        println!("{:>2}. {:<15} {:>4}", i + 1, rec.name, rec.score);
+    }
+}
     // TODO (Task 9): load the scores; print "TOP n"; if there are none print
     // "  no scores yet"; otherwise sort with data::sort_scores_desc and print up
     // to n lines like
     //  1. Ana              83
-    println!("TOP {n}");
-    println!("  (high scores are not shown yet)");
-}
 
 // A scored game against a randomly placed fleet.
 fn play_game(fleet: &[ShipSpec]) {
