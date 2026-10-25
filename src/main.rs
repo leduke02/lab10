@@ -1,5 +1,5 @@
 use battleship::board::{self, Board, Shot};
-use battleship::data::{self, ShipSpec};
+use battleship::data::{self, ScoreRecord, ShipSpec};
 use battleship::ui;
 use rand::SeedableRng;
 use rand::rngs::StdRng;
@@ -68,15 +68,31 @@ fn play_game(fleet: &[ShipSpec]) {
         println!("The fleet does not fit on the board. Check {FLEET_PATH}.");
         return;
     }
+
     if let Some(shots) = play_round(&mut board) {
         let score = board::score_for(shots);
         println!("All ships sunk in {shots} shots. Score: {score}");
-        // TODO (Task 10): if score > 0, ask for a name with ui::prompt, build a
-        // ScoreRecord (add it to the `use` line), and save it with
-        // data::append_score. Print "Score saved." only when it returns true.
+
+        if score > 0 {
+            let name = ui::prompt("Name for the high-score list: ");
+            let name = name.trim();
+            if !name.is_empty() {
+                let record = ScoreRecord {
+                    name: name.to_string(),
+                    score,
+                };
+                if data::append_score(SCORES_PATH, &record) {
+                    println!("Score saved.");
+                }
+            }
+        }
     }
 }
+// A scored game against a randomly placed fleet.
 
+        // TODO (Task 10): if score > 0, ask for a name with ui::prompt, build a
+        // ScoreRecord (add it to the `use` line), and save it with
+        // data::append_score. Print "Score saved." only when it returns 
 // An unscored game on the fixed layout in the practice file.
 fn practice_game() {
     match data::load_board(PRACTICE_PATH) {
